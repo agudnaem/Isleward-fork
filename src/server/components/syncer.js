@@ -163,7 +163,7 @@ module.exports = {
 		if (self)
 			o = this.oSelf;
 
-		if (!o.has(property))
+		if (!o.isDefined(property))
 			o[property] = [];
 
 		o[property].push(value);

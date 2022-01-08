@@ -108,7 +108,7 @@ module.exports = async (cpnInv, itemId) => {
 		}
 
 		cpnInv.destroyItem(itemId, 1);
-		if (item.has('quickSlot'))
+		if (item.isDefined('quickSlot'))
 			cpnInv.obj.equipment.replaceQuickSlot(item);
 	}
 };

@@ -9,36 +9,15 @@ const config = {
 	loginBgGeneratorPath: null,
 	resourceList: [],
 	textureList: [
-		'tiles',
-		'walls',
-		'mobs',
-		'bosses',
-		'animBigObjects',
-		'bigObjects',
-		'objects',
-		'characters',
-		'attacks',
-		'ui',
-		'auras',
-		'animChar',
-		'animMob',
-		'animBoss',
-		'white',
-		'ray'
+
 	],
 	//Textures that are 24x24. The renderer needs to know this
 	bigTextures: [
-		'animBigObjects',
-		'animBoss',
-		'bigObjects',
-		'bosses',
-		'auras'
+
 	],
 	atlasTextureDimensions: {},
 	atlasTextures: [
-		'tiles',
-		'walls',
-		'objects'
+
 	],
 	spriteSizes: {
 		'images/tiles.png': 8,
@@ -46,9 +25,9 @@ const config = {
 		'images/objects.png': 8,
 		'images/mobs.png': 8
 	},
-	blockingTileIndices: [
-		6, 7, 54, 55, 62, 63, 154, 189, 190, 192, 193, 194, 195, 196, 197
-	],
+	blockingTileIndices: {
+		tiles: [6, 7, 54, 55, 62, 63, 154, 189, 190, 192, 193, 194, 195, 196, 197]
+	},
 	tileOpacities: {
 		default: {
 			default: 0.4,

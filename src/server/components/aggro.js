@@ -31,7 +31,7 @@ module.exports = {
 			this.faction = blueprint.faction;
 
 		//TODO: Why don't we move if faction is null?
-		if (!this.has('faction'))
+		if (!this.isDefined('faction'))
 			return;
 
 		if (this.physics.width > 0)

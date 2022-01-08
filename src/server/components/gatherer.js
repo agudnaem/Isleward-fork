@@ -219,7 +219,7 @@ module.exports = {
 		let nodeType = node.resourceNode.nodeType;
 
 		if (nodeType === 'fish') {
-			if (!obj.equipment.eq.has('tool')) {
+			if (!obj.equipment.eq.isDefined('tool')) {
 				this.sendAnnouncement('You need a fishing rod to fish');
 
 				return;
@@ -318,7 +318,7 @@ module.exports = {
 					continue;
 
 				if (node.resourceNode.nodeType === 'fish') {
-					if (!this.obj.equipment.eq.has('tool')) {
+					if (!this.obj.equipment.eq.isDefined('tool')) {
 						this.sendAnnouncement('You need a fishing rod to fish');
 
 						if (this.gathering === node) {

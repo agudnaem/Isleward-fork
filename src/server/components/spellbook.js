@@ -146,7 +146,7 @@ module.exports = {
 				this.furthestRange = builtSpell.range;
 		}
 
-		if ((!options.has('id')) && (spellId === -1)) {
+		if ((!options.isDefined('id')) && (spellId === -1)) {
 			spellId = 0;
 			this.spells.forEach(function (s) {
 				if (s.id >= spellId)
@@ -154,7 +154,7 @@ module.exports = {
 			});
 		}
 
-		builtSpell.id = !options.has('id') ? spellId : options.id;
+		builtSpell.id = !options.isDefined('id') ? spellId : options.id;
 
 		//Mobs don't get abilities put on CD when they learn them
 		if (!this.obj.mob && builtSpell.cdMax)
@@ -322,7 +322,7 @@ module.exports = {
 	},
 
 	canCast: function (action) {
-		if (!action.has('spell'))
+		if (!action.isDefined('spell'))
 			return false;
 
 		let spell = this.spells.find(s => (s.id === action.spell));
@@ -336,7 +336,7 @@ module.exports = {
 	},
 
 	cast: function (action, isAuto) {
-		if (!action.has('spell')) {
+		if (!action.isDefined('spell')) {
 			const isCasting = this.isCasting();
 			this.stopCasting();
 
@@ -368,7 +368,7 @@ module.exports = {
 			if (!isAuto)
 				this.sendAnnouncement('Insufficient mana to cast spell');
 			success = false;
-		} else if (spell.has('range')) {
+		} else if (spell.isDefined('range')) {
 			let distance = Math.max(Math.abs(action.target.x - this.obj.x), Math.abs(action.target.y - this.obj.y));
 			let range = spell.range;
 			if ((spell.useWeaponRange) && (this.obj.player)) {

@@ -6,7 +6,7 @@ module.exports = {
 	ttl: -1,
 
 	init: function (blueprint) {
-		if (blueprint.has('ownerName'))
+		if (blueprint.isDefined('ownerName'))
 			this.ownerName = blueprint.ownerName;
 
 		if (blueprint.ttl)

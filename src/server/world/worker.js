@@ -78,7 +78,7 @@ let onDbReady = async function () {
 
 io.init(onDbReady);
 
-process.on('message', m => {
+process.on('message', async m => {
 	if (m.module) {
 		let instances = instancer.instances;
 		let iLen = instances.length;
@@ -103,7 +103,7 @@ process.on('message', m => {
 	} else if (m.threadModule)
 		global[m.threadModule][m.method](m.data);
 	else if (m.method)
-		instancer[m.method](m.args);
+		await instancer[m.method](m.args);
 	else if (m.event)
 		eventEmitter.emit(m.event, m.data);
 });

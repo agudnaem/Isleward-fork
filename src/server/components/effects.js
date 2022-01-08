@@ -126,7 +126,7 @@ module.exports = {
 	},
 
 	canApplyEffect: function (type) {
-		if (!this.ccResistances.has(type))
+		if (!this.ccResistances.isDefined(type))
 			return true;
 
 		let ccResistances = this.ccResistances;
@@ -138,7 +138,7 @@ module.exports = {
 
 	addEffect: function (options, source) {
 		//Skip 0-duration effects
-		if ((options.has('ttl')) && (options.ttl === 0))
+		if ((options.isDefined('ttl')) && (options.ttl === 0))
 			return;
 
 		options.caster = options.caster || source;

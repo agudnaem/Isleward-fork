@@ -3,7 +3,15 @@ define([
 ], function (
 	globals
 ) {
+	let noFlipTiles = null;
+	let tileOpacities = null;
+
 	return {
+		initMap: function (msg) {
+			noFlipTiles = msg.noFlipTiles;
+			tileOpacities = msg.tileOpacities;
+		},
+
 		getSheetNum: function (tile) {
 			if (tile < 224)
 				return 0;
@@ -47,15 +55,13 @@ define([
 		},
 
 		map: function (tile) {
-			const { clientConfig: { tileOpacities } } = globals;
+			if (tileOpacities[tile] === undefined)
+				return 1;
 
-			const { offset, sheetName } = this.getOffsetAndSheet(tile);
-			const mappedTile = tile - offset;
+			const { max, opacity } = tileOpacities[tile];
 
-			const opacityConfig = tileOpacities[sheetName] || tileOpacities.default;
-
-			let alpha = (opacityConfig[mappedTile] || opacityConfig.default);
-			if (opacityConfig.max !== null) {
+			let alpha = opacity;
+			if (max !== undefined) {
 				alpha = alpha + (Math.random() * (alpha * 0.2));
 				alpha = Math.min(1, alpha);
 			}
@@ -64,16 +70,7 @@ define([
 		},
 
 		canFlip: function (tile) {
-			const { clientConfig: { tilesNoFlip } } = globals;
-
-			const { offset, sheetName } = this.getOffsetAndSheet(tile);
-			const mappedTile = tile - offset;
-
-			const noFlipTiles = tilesNoFlip[sheetName];
-			if (!noFlipTiles)
-				return true;
-
-			return !noFlipTiles.includes(mappedTile);
+			return !noFlipTiles.includes(tile + 1);
 		}
 	};
 });

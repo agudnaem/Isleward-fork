@@ -77,7 +77,7 @@ module.exports = {
 	},
 
 	open: function (msg) {
-		if (!msg.has('sourceId'))
+		if (!msg.isDefined('sourceId'))
 			return;
 
 		let obj = this.obj.instance.objects.objects.find(o => o.serverId === msg.sourceId);

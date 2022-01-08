@@ -29,7 +29,7 @@ module.exports = {
 	},
 
 	isSlotEmpty: function (slot) {
-		return !this.eq.has(slot);
+		return !this.eq.isDefined(slot);
 	},
 
 	autoEquip: function (itemId) {
@@ -44,7 +44,7 @@ module.exports = {
 			return;
 		}
 
-		if (!this.eq.has(item.slot)) {
+		if (!this.eq.isDefined(item.slot)) {
 			this.equip(itemId);
 			return true;
 		}
@@ -71,12 +71,12 @@ module.exports = {
 		if (!slot)
 			slot = item.equipSlot || item.slot;
 		if (slot === 'twoHanded') {
-			if (this.eq.has('offHand'))
+			if (this.eq.isDefined('offHand'))
 				this.unequip(this.eq.offHand, true);
 
 			slot = 'oneHanded';
 		} else if (slot === 'offHand') {
-			if (this.eq.has('oneHanded')) {
+			if (this.eq.isDefined('oneHanded')) {
 				let oneHandedEq = inventory.findItem(this.eq.oneHanded);
 				if (oneHandedEq.slot === 'twoHanded')
 					this.unequip(this.eq.oneHanded, true);
@@ -98,8 +98,8 @@ module.exports = {
 		delete item.pos;
 
 		if (slot === 'finger') {
-			let f1 = (this.eq.has('finger-1'));
-			let f2 = (this.eq.has('finger-2'));
+			let f1 = (this.eq.isDefined('finger-1'));
+			let f2 = (this.eq.isDefined('finger-2'));
 
 			if ((f1) && (f2))
 				slot = 'finger-1';
@@ -109,7 +109,7 @@ module.exports = {
 				slot = 'finger-2';
 		}
 
-		if (this.eq.has(slot)) {
+		if (this.eq.isDefined(slot)) {
 			if (this.eq[slot] === item.id)
 				return;
 
@@ -142,7 +142,7 @@ module.exports = {
 		let obj = this.obj;
 		let inventory = obj.inventory;
 
-		if (typeof(item) !== 'object' || !item.has('id'))
+		if (typeof(item) !== 'object' || !item.isDefined('id'))
 			item = inventory.findItem(itemId);
 
 		if (!item)
@@ -186,7 +186,7 @@ module.exports = {
 		let obj = this.obj;
 		const inventory = obj.inventory;
 
-		if (!msg.has('itemId') && this.quickSlots.has(msg.slot)) { 
+		if (!msg.isDefined('itemId') && this.quickSlots.isDefined(msg.slot)) {
 			let currentQuickItem = inventory.findItem(this.quickSlots[msg.slot]);
 			if (!currentQuickItem)
 				return;
@@ -218,7 +218,7 @@ module.exports = {
 	},
 
 	useQuickSlot: function (msg) {
-		if (!this.quickSlots.has(msg.slot))
+		if (!this.quickSlots.isDefined(msg.slot))
 			return;
 
 		const inventory = this.obj.inventory;

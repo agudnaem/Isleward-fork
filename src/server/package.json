@@ -9,6 +9,7 @@
     "express": "^4.17.1",
     "express-minify": "^1.0.0",
     "image-size": "^1.0.0",
+    "jimp": "^0.16.1",
     "rethinkdbdash": "^2.3.31",
     "socket.io": "^4.2.0",
     "universal-analytics": "^0.5.1"

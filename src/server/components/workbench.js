@@ -79,7 +79,7 @@ module.exports = {
 	},
 
 	open: async function (msg) {
-		if (!msg.has('sourceId'))
+		if (!msg.isDefined('sourceId'))
 			return;
 
 		let obj = this.obj.instance.objects.objects.find(o => o.serverId === msg.sourceId);
@@ -121,7 +121,7 @@ module.exports = {
 	},
 
 	resolveCallback: function (msg, result) {
-		let callbackId = (msg.has('callbackId')) ? msg.callbackId : msg;
+		let callbackId = (msg.isDefined('callbackId')) ? msg.callbackId : msg;
 		result = result || [];
 
 		if (!callbackId)

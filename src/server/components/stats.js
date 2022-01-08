@@ -453,7 +453,7 @@ module.exports = {
 				for (let i = 0; i < aLen; i++) {
 					let a = aggroList[i];
 
-					if (a.damage <= 0 || !a.obj.has('serverId'))
+					if (a.damage <= 0 || !a.obj.isDefined('serverId'))
 						continue;
 
 					obj.inventory.dropBag(a.obj.name, killSource);
@@ -602,7 +602,7 @@ module.exports = {
 			return;
 
 		let threatMult = heal.threatMult;
-		if (!heal.has('threatMult'))
+		if (!heal.isDefined('threatMult'))
 			threatMult = 1;
 
 		let values = this.values;

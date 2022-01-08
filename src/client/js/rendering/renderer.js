@@ -9,7 +9,8 @@ define([
 	'js/rendering/spritePool',
 	'js/system/globals',
 	'js/rendering/renderLoginBackground',
-	'js/rendering/helpers/resetRenderer'
+	'js/rendering/helpers/resetRenderer',
+	'js/rendering/textures'
 ], function (
 	resources,
 	events,
@@ -21,7 +22,8 @@ define([
 	spritePool,
 	globals,
 	renderLoginBackground,
-	resetRenderer
+	resetRenderer,
+	textures
 ) {
 	const mRandom = Math.random.bind(Math);
 
@@ -120,6 +122,7 @@ define([
 			textureList.forEach(t => {
 				this.textures[t] = new PIXI.BaseTexture(sprites[t]);
 				this.textures[t].scaleMode = PIXI.SCALE_MODES.NEAREST;
+				this.textures[t].size = this.textures[t].width / 8;
 			});
 
 			particleLayers.forEach(p => {
@@ -132,39 +135,6 @@ define([
 
 				particleEngines[p] = engine;
 			});
-
-			this.buildSpritesTexture();
-		},
-
-		buildSpritesTexture: function () {
-			const { clientConfig: { atlasTextureDimensions, atlasTextures } } = globals;
-
-			let container = new PIXI.Container();
-
-			let totalHeight = 0;
-			atlasTextures.forEach(t => {
-				let texture = this.textures[t];
-				let tile = new PIXI.Sprite(new PIXI.Texture(texture));
-				tile.width = texture.width;
-				tile.height = texture.height;
-				tile.x = 0;
-				tile.y = totalHeight;
-
-				atlasTextureDimensions[t] = {
-					w: texture.width / 8,
-					h: texture.height / 8
-				};
-
-				container.addChild(tile);
-
-				totalHeight += tile.height;
-			});
-
-			let renderTexture = PIXI.RenderTexture.create(this.textures.tiles.width, totalHeight);
-			this.renderer.render(container, renderTexture);
-
-			this.textures.sprites = renderTexture;
-			this.textures.scaleMult = PIXI.SCALE_MODES.NEAREST;
 		},
 
 		toggleScreen: function () {
@@ -184,7 +154,7 @@ define([
 		buildTitleScreen: function () {
 			this.titleScreen = true;
 
-			renderLoginBackground(this);
+			//renderLoginBackground(this);
 		},
 
 		onResize: function () {
@@ -213,22 +183,28 @@ define([
 			events.emit('onResize');
 		},
 
-		getTexture: function (baseTex, cell, size) {
-			size = size || 8;
-			let textureName = baseTex + '_' + cell;
+		getTexture: function (baseTex, cell) {
+			try {
+				let textureName = baseTex + '_' + cell;
 
-			let textureCache = this.textureCache;
+				let textureCache = this.textureCache;
 
-			let cached = textureCache[textureName];
+				let cached = textureCache[textureName];
 
-			if (!cached) {
-				let y = ~~(cell / 8);
-				let x = cell - (y * 8);
-				cached = new PIXI.Texture(this.textures[baseTex], new PIXI.Rectangle(x * size, y * size, size, size));
-				textureCache[textureName] = cached;
+				if (!cached) {
+					let y = ~~(cell / 8);
+					let x = cell - (y * 8);
+					const texture = this.textures[baseTex];
+					const size = texture.size;
+
+					cached = new PIXI.Texture(texture, new PIXI.Rectangle(x * size, y * size, size, size));
+					textureCache[textureName] = cached;
+				}
+
+				return cached;
+			} catch (e) {
+				console.log(e, baseTex, cell);
 			}
-
-			return cached;
 		},
 
 		clean: function () {
@@ -240,7 +216,7 @@ define([
 			let container = this.layers.tileSprites;
 			this.stage.removeChild(container);
 
-			this.layers.tileSprites = container = new PIXI.Container();
+			this.layers.tileSprites = container = new PIXI.ParticleContainer(30000);
 			container.layer = 'tiles';
 			this.stage.addChild(container);
 
@@ -255,6 +231,8 @@ define([
 					return 1;
 				return 0;
 			});
+
+			this.textureCache = {};
 		},
 
 		buildTile: function (c, i, j) {
@@ -277,7 +255,23 @@ define([
 			return tile;
 		},
 
-		onGetMap: function (msg) {
+		onGetMap: async function (msg) {
+			tileOpacity.initMap(msg);
+
+			//Load sprite atlas
+			let spriteAtlas = null;
+			await new Promise(res => {
+				spriteAtlas = new Image();
+				spriteAtlas.onload = res;
+				spriteAtlas.src = msg.spriteAtlasPath;
+			});
+
+			//Build sprite texture
+			this.textures.sprites = new PIXI.BaseTexture(spriteAtlas);
+			this.textures.sprites.scaleMode = PIXI.SCALE_MODES.NEAREST;
+			this.textures.sprites.size = 8;
+
+			//Misc
 			this.titleScreen = false;
 			physics.init(msg.collisionMap);
 
@@ -793,20 +787,36 @@ define([
 			particleEngine.destroyEmitter(emitter);
 		},
 
-		setSprite: function (obj) {
+		loadTexture: async function (textureName, texturePath) {
+			texturePath = texturePath ?? textureName;
+
+			if (!texturePath.includes('.png'))
+				texturePath = `images/${texturePath}.png`;
+
+			const image = await textures.getLoader(texturePath);
+
+			//Build sprite texture
+			this.textures[textureName] = new PIXI.BaseTexture(image);
+			this.textures[textureName].scaleMode = PIXI.SCALE_MODES.NEAREST;
+			this.textures[textureName].size = this.textures[textureName].width / 8;
+		},
+
+		setSprite: async function (obj) {
 			const { sprite, sheetName, cell } = obj;
 
-			const bigSheets = globals.clientConfig.bigTextures;
-			const isBigSheet = bigSheets.includes(sheetName);
+			const textureExists = this.textures.hasOwnProperty(sheetName);
+			if (!textureExists)
+				await this.loadTexture(sheetName);
 
-			const newSize = isBigSheet ? 24 : 8;
+			sprite.texture = this.getTexture(sheetName, cell);
+
+			const newSize = sprite.texture.width;
 
 			obj.w = newSize * scaleMult;
 			obj.h = obj.w;
 
 			sprite.width = obj.w;
 			sprite.height = obj.h;
-			sprite.texture = this.getTexture(sheetName, cell, newSize);
 
 			if (newSize !== sprite.size) {
 				sprite.size = newSize;

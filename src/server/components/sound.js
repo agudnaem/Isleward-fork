@@ -14,7 +14,7 @@ module.exports = {
 		const s = Object.fromEntries(
 			serializeProps
 				.map(p => {
-					if (!this.has(p))
+					if (!this.isDefined(p))
 						return null;
 
 					return [p, this[p]];

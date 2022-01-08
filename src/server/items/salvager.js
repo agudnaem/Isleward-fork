@@ -146,7 +146,7 @@ module.exports = {
 			if (m.qualityName) {
 				newItem.quality = item.quality;
 				newItem.name = m.qualityName[item.quality];
-			} else if (m.has('quality'))
+			} else if (m.isDefined('quality'))
 				newItem.quality = m.quality;
 
 			newItem.sprite = materialItems[newItem.name].sprite;

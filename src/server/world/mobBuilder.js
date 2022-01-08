@@ -27,7 +27,7 @@ module.exports = {
 		if (typeDefinition.sheetName)
 			mob.sheetName = typeDefinition.sheetName;
 
-		if (typeDefinition.has('cell'))
+		if (typeDefinition.isDefined('cell'))
 			mob.cell = typeDefinition.cell;
 
 		mob.addComponent('stats', {
@@ -63,7 +63,7 @@ module.exports = {
 			dmgMult: typeDefinition.dmgMult
 		});
 
-		if (!blueprint.has('attackable') || blueprint.attackable === true) {
+		if (!blueprint.isDefined('attackable') || blueprint.attackable === true) {
 			mob.addComponent('aggro', {
 				faction: blueprint.faction
 			});

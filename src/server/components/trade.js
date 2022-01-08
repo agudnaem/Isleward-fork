@@ -111,7 +111,7 @@ module.exports = {
 	},
 
 	startBuy: function (msg) {
-		if (!msg.has('target') && !msg.targetName)
+		if (!msg.isDefined('target') && !msg.targetName)
 			return false;
 
 		let target = msg.target;
@@ -353,7 +353,7 @@ module.exports = {
 	},
 
 	resolveCallback: function (msg, result) {
-		let callbackId = msg.has('callbackId') ? msg.callbackId : msg;
+		let callbackId = msg.isDefined('callbackId') ? msg.callbackId : msg;
 		result = result || [];
 
 		if (!callbackId)

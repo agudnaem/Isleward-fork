@@ -33,7 +33,7 @@ module.exports = (cpnInv, item, hideMessage, noStack, hideAlert, createBagIfFull
 	//We need to know if a mob dropped it for quest purposes
 	let fromMob = item.fromMob;
 
-	if (!item.has('quality'))
+	if (!item.isDefined('quality'))
 		item.quality = 0;
 
 	//Store the quantity to send to the player
@@ -69,7 +69,7 @@ module.exports = (cpnInv, item, hideMessage, noStack, hideAlert, createBagIfFull
 		if (item.eq)
 			delete item.pos;
 
-		if (!item.has('pos') && !item.eq) {
+		if (!item.isDefined('pos') && !item.eq) {
 			const iLen = items.length;
 			let pos = iLen;
 			for (let i = 0; i < iLen; i++) {
@@ -129,7 +129,7 @@ module.exports = (cpnInv, item, hideMessage, noStack, hideAlert, createBagIfFull
 			delete item.eq;
 			obj.equipment.equip(item.id);
 		}
-	} else if (item.has('quickSlot')) {
+	} else if (item.isDefined('quickSlot')) {
 		obj.equipment.setQuickSlot({
 			itemId: item.id,
 			slot: item.quickSlot

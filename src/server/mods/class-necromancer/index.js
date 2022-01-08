@@ -75,10 +75,8 @@ module.exports = {
 		};
 	},
 
-	onBeforeGetClientConfig: function ({ resourceList, textureList }) {
+	onBeforeGetClientConfig: function ({ resourceList }) {
 		resourceList.push(`${this.folderName}/images/abilityIcons.png`);
-
-		textureList.push(`${this.folderName}/images/mobs.png`);
 	},
 
 	beforeGetSpellTemplate: function (spell) {

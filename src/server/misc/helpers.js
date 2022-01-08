@@ -51,7 +51,7 @@ Object.defineProperty(Array.prototype, 'spliceFirstWhere', {
 });
 
 //eslint-disable-next-line no-extend-native
-Object.defineProperty(Object.prototype, 'has', {
+Object.defineProperty(Object.prototype, 'isDefined', {
 	enumerable: false,
 	value: function (prop) {
 		//eslint-disable-next-line no-undefined

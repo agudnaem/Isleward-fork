@@ -1,17 +1,18 @@
-let map = require('./map');
-let syncer = require('./syncer');
-let objects = require('../objects/objects');
-let spawners = require('./spawners');
-let physics = require('./physics');
-let resourceSpawner = require('./resourceSpawner');
-let spellCallbacks = require('../config/spells/spellCallbacks');
-let questBuilder = require('../config/quests/questBuilder');
-let events = require('../events/events');
-let scheduler = require('../misc/scheduler');
-let herbs = require('../config/herbs');
-let eventEmitter = require('../misc/events');
+const map = require('./map');
+const syncer = require('./syncer');
+const objects = require('../objects/objects');
+const spawners = require('./spawners');
+const physics = require('./physics');
+const resourceSpawner = require('./resourceSpawner');
+const spellCallbacks = require('../config/spells/spellCallbacks');
+const questBuilder = require('../config/quests/questBuilder');
+const events = require('../events/events');
+const scheduler = require('../misc/scheduler');
+const herbs = require('../config/herbs');
+const eventEmitter = require('../misc/events');
 const mods = require('../misc/mods');
 const transactions = require('../security/transactions');
+const spriteBuilder = require('./spriteBuilder/index');
 
 //Own helpers
 const { stageZoneIn, unstageZoneIn, clientAck } = require('./instancer/handshakes');
@@ -26,11 +27,12 @@ module.exports = {
 
 	lastTime: 0,
 
-	init: function (args) {
+	init: async function (args) {
 		this.zoneId = args.zoneId;
 
 		spellCallbacks.init();
 		herbs.init();
+		spriteBuilder.init(args.name);
 		map.init(args);
 
 		const fakeInstance = {
@@ -66,6 +68,8 @@ module.exports = {
 		map.clientMap.zoneId = this.zoneId;
 
 		[resourceSpawner, syncer, objects, questBuilder, events].forEach(i => i.init(fakeInstance));
+
+		await spriteBuilder.finalize();
 
 		this.tick();
 
@@ -208,7 +212,7 @@ module.exports = {
 		if (msg.keepPos && (!physics.isValid(obj.x, obj.y) || !map.canPathFromPos(obj)))
 			msg.keepPos = false;
 
-		if (!msg.keepPos || !obj.has('x') || (map.mapFile.properties.isRandom && obj.instanceId !== map.seed)) {
+		if (!msg.keepPos || !obj.isDefined('x') || (map.mapFile.properties.isRandom && obj.instanceId !== map.seed)) {
 			obj.x = spawnPos.x;
 			obj.y = spawnPos.y;
 		}

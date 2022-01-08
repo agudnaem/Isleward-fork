@@ -28,7 +28,7 @@ module.exports = {
 						!mobBlueprint.noQuest &&
 						(
 							mobBlueprint.attackable ||
-							!mobBlueprint.has('attackable')
+							!mobBlueprint.isDefined('attackable')
 						) &&
 						mobBlueprint.level <= ~~(this.obj.stats.values.level * 1.35) &&
 						mobCounts[m] > 1

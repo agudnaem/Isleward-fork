@@ -24,7 +24,7 @@ module.exports = {
 			this[cpn.type] = cpn;
 		}
 
-		if (cpn.init && this.has('instance'))
+		if (cpn.init && this.isDefined('instance'))
 			cpn.init(blueprint || {}, isTransfer);
 		else {
 			for (let p in blueprint) 
@@ -220,7 +220,7 @@ module.exports = {
 	},
 
 	clearQueue: function () {
-		if (this.has('serverId')) {
+		if (this.isDefined('serverId')) {
 			this.instance.syncer.queue('onClearQueue', {
 				id: this.id
 			}, [this.serverId]);

@@ -25,8 +25,8 @@ module.exports = {
 
 		//Spells should be sorted so they're EQ'd in the right order
 		items.sort(function (a, b) {
-			let aId = a.has('spellId') ? ~~a.spellId : 9999;
-			let bId = b.has('spellId') ? ~~b.spellId : 9999;
+			let aId = a.isDefined('spellId') ? ~~a.spellId : 9999;
+			let bId = b.isDefined('spellId') ? ~~b.spellId : 9999;
 			return (aId - bId);
 		});
 
@@ -49,7 +49,7 @@ module.exports = {
 
 		for (let i = 0; i < iLen; i++) {
 			let item = items[i];
-			let pos = item.has('pos') ? item.pos : null;
+			let pos = item.isDefined('pos') ? item.pos : null;
 
 			let newItem = this.getItem(item, true, true);
 			newItem.pos = pos;
@@ -146,7 +146,7 @@ module.exports = {
 	},
 
 	learnAbility: function (itemId, runeSlot) {
-		if (itemId.has('itemId')) {
+		if (itemId.isDefined('itemId')) {
 			let msg = itemId;
 			itemId = msg.itemId;
 			runeSlot = msg.slot;
@@ -252,7 +252,7 @@ module.exports = {
 	},
 
 	unlearnAbility: function (itemId) {
-		if (itemId.has('itemId'))
+		if (itemId.isDefined('itemId'))
 			itemId = itemId.itemId;
 
 		let item = this.findItem(itemId);
@@ -348,7 +348,7 @@ module.exports = {
 		if ((!item) || (item.noDrop) || (item.quest))
 			return;
 
-		if (item.has('quickSlot')) {
+		if (item.isDefined('quickSlot')) {
 			this.obj.equipment.setQuickSlot({
 				itemId: null,
 				slot: item.quickSlot
@@ -416,7 +416,7 @@ module.exports = {
 				});
 			}
 
-			if (!item.has('pos') && !item.eq) {
+			if (!item.isDefined('pos') && !item.eq) {
 				let pos = i;
 				for (let j = 0; j < iLen; j++) {
 					if (!items.some(fj => (fj.pos === j))) {
@@ -478,7 +478,7 @@ module.exports = {
 	},
 
 	resolveCallback: function (msg, result) {
-		let callbackId = msg.has('callbackId') ? msg.callbackId : msg;
+		let callbackId = msg.isDefined('callbackId') ? msg.callbackId : msg;
 		result = result || [];
 
 		if (!callbackId)
@@ -506,7 +506,7 @@ module.exports = {
 			return (
 				i.spell &&
 				i.spell.rolls &&
-				i.spell.rolls.has('damage') &&
+				i.spell.rolls.isDefined('damage') &&
 				(
 					i.slot === 'twoHanded' || 
 					i.slot === 'oneHanded'

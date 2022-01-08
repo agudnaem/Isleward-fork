@@ -6,15 +6,10 @@ module.exports = {
 	name: 'Feature: Cards',
 
 	init: function () {
-		this.events.on('onBeforeGetClientConfig', this.onBeforeGetClientConfig.bind(this));
 		this.events.on('onBeforeDropBag', this.onBeforeDropBag.bind(this));
 		this.events.on('onBeforeGetRecipes', this.onBeforeGetRecipes.bind(this));
 		this.events.on('onAfterGetZone', this.onAfterGetZone.bind(this));
 		this.events.on('onAfterGetLayerObjects', this.onAfterGetLayerObjects.bind(this));
-	},
-
-	onBeforeGetClientConfig: function (config) {
-		config.textureList.push(`${this.folderName}/images/mobs.png`);
 	},
 
 	onAfterGetZone: function (zoneName, config) {

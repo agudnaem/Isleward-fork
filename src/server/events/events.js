@@ -383,7 +383,7 @@ module.exports = {
 					phase.destroyed = true;
 					continue;
 				} else {
-					if (phase.has('ttl')) { 
+					if (phase.isDefined('ttl')) {
 						if (phase.ttl === 0) {
 							phase.end = true;
 							continue;

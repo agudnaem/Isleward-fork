@@ -8,8 +8,8 @@ module.exports = ({ inventory: { items } }, { needItems }) => {
 		const allowedItemIds = items
 			.filter(item => {
 				const isValidItem = (
-					withProps.every(p => item.has(p)) &&
-					withoutProps.every(p => !item.has(p)) &&
+					withProps.every(p => item.isDefined(p)) &&
+					withoutProps.every(p => !item.isDefined(p)) &&
 					checks.every(c => c(item))
 				);
 

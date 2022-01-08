@@ -25,7 +25,7 @@ module.exports = {
 
 		let sessionDuration = 0;
 
-		if (player.has('id')) {
+		if (player.isDefined('id')) {
 			if (player.social)
 				player.social.dc();
 			sessionDuration = ~~(((+new Date()) - player.player.sessionStart) / 1000);
@@ -49,7 +49,7 @@ module.exports = {
 				onGetDisconnectedPlayer: [player.name]
 			});
 
-			if (player.has('id'))
+			if (player.isDefined('id'))
 				this.modifyPlayerCount(-1);
 		}
 
