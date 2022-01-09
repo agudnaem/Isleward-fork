@@ -1,9 +1,11 @@
 define([
 	'socket',
-	'js/system/events'
+	'js/system/events',
+	'js/rendering/renderer'
 ], function (
 	io,
-	events
+	events,
+	renderer
 ) {
 	let client = {
 		doneConnect: false,
@@ -21,32 +23,6 @@ define([
 
 			Object.entries(this.processAction).forEach(([k, v]) => {
 				this.processAction[k] = v.bind(this);
-			});
-		},
-
-		onRezoneStart: function () {
-			//Fired for mods to listen to
-			events.emit('rezoneStart');
-
-			events.emit('destroyAllObjects');
-			events.emit('resetRenderer');
-			events.emit('resetPhysics');
-			events.emit('clearUis');
-
-			client.request({
-				threadModule: 'rezoneManager',
-				method: 'clientAck',
-				data: {}
-			});
-		},
-
-		onGetMap: function ([msg]) {
-			events.emit('onGetMap', msg);
-
-			client.request({
-				threadModule: 'instancer',
-				method: 'clientAck',
-				data: {}
 			});
 		},
 
@@ -93,8 +69,10 @@ define([
 				});
 			},
 
-			getMap: function (eventName, msgs) {
-				events.emit('onGetMap', msgs[0]);
+			getMap: async function (eventName, [msgMap]) {
+				await renderer.onGetMap(msgMap);
+
+				events.emit('onGetMap', msgMap);
 
 				client.request({
 					threadModule: 'instancer',

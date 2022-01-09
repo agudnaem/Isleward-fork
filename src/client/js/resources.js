@@ -8,11 +8,9 @@ define([
 
 		init: async function () {
 			const { sprites } = this;
-			const { clientConfig: { resourceList, textureList } } = globals;
+			const { clientConfig: { textureList } } = globals;
 
-			const fullList = [].concat(resourceList, textureList);
-
-			return Promise.all(fullList.map(s => {
+			return Promise.all(textureList.map(s => {
 				return new Promise(res => {
 					const spriteSource = s.includes('.png') ? s : `images/${s}.png`;
 

@@ -1,122 +1,115 @@
 define([
-	'js/rendering/renderer'
+	'js/rendering/renderer',
+	'js/system/globals'
 ], function (
-	renderer
+	renderer,
+	globals
 ) {
 	return {
 		type: 'lightPatch',
 
 		color: 'ffeb38',
+
 		patches: [],
+		rayContainers: [],
 		rays: [],
 
 		init: function (blueprint) {
-			this.blueprint = this.blueprint || {};
+			const { obj, patches, rayContainers, rays, color, isVisible } = this;
+			const { x, y } = obj;
 
-			let obj = this.obj;
+			const maxDistance = Math.sqrt(Math.pow(obj.width / 2, 2) + Math.pow(obj.height / 2, 2));
 
-			let x = obj.x;
-			let y = obj.y;
-
-			let maxDistance = Math.sqrt(Math.pow(obj.width / 3, 2) + Math.pow(obj.height / 3, 2));
 			for (let i = 0; i < obj.width; i++) {
 				for (let j = 0; j < obj.height; j++) {
-					let distance = maxDistance - Math.sqrt(Math.pow((obj.width / 2) - i, 2) + Math.pow((obj.width / 2) - j, 2));
-					const maxAlpha = (distance / maxDistance) * 0.2;
-					if (maxAlpha <= 0.05)
-						continue;
+					const distance = maxDistance - Math.sqrt(Math.pow((obj.width / 3) - i, 2) + Math.pow((obj.width / 3) - j, 2));
 
-					let sprite = renderer.buildObject({
-						x: (x + i),
-						y: (y + j),
-						sheetName: 'white',
-						cell: 0,
-						layerName: 'lightPatches'
-					});
-					sprite.alpha = (maxAlpha * 0.3) + (Math.random() * (maxAlpha * 0.7));
-					sprite.tint = '0x' + this.color;
+					const maxAlpha = (distance / maxDistance) * 0.2;
+					if (maxAlpha < 0.05)
+						continue;
 
 					const size = (3 + ~~(Math.random() * 6)) * scaleMult;
 
-					sprite.width = size;
-					sprite.height = size;
-					sprite.x += scaleMult * ~~(Math.random() * 4);
-					sprite.y += scaleMult * ~~(Math.random() * 4);
+					const patch = globals.objects.buildObject({
+						x: ((x + i) * scale) + (scaleMult * ~~(Math.random() * 4)),
+						y: ((y + j) * scale) + (scaleMult * ~~(Math.random() * 4)),
+						width: size,
+						height: size,
+						visible: isVisible,
+						components: [{
+							type: 'sprite',
+							sheetName: 'white',
+							cell: 0,
+							layerName: 'lightPatches',
+							alpha: (maxAlpha * 0.3) + (Math.random() * (maxAlpha * 0.7)),
+							tint: '0x' + color,
+							blendMode: PIXI.BLEND_MODES.ADD
+						}]
+					});
 
-					sprite.blendMode = PIXI.BLEND_MODES.ADD;
-
-					this.patches.push(sprite);
+					patches.push(patch);
 				}
 			}
 
-			let rCount = ((obj.width * obj.height) / 10) + ~~(Math.random() + 2);
+			const rCount = ((obj.width * obj.height) / 10) + ~~(Math.random() + 2);
 			for (let i = 0; i < rCount; i++) {
-				let nx = x + 3 + ~~(Math.random() * (obj.width - 1));
-				let ny = y - 4 + ~~(Math.random() * (obj.height));
-				let w = 1 + ~~(Math.random() * 2);
-				let h = 6 + ~~(Math.random() * 13);
-				let hm = 2;
+				const nx = x + 3 + ~~(Math.random() * (obj.width - 1));
+				const ny = y - 4 + ~~(Math.random() * (obj.height));
+				const w = 1 + ~~(Math.random() * 2);
+				const h = 6 + ~~(Math.random() * 13);
+				const hm = 2;
 
-				let rContainer = renderer.buildContainer({
+				const rayContainer = renderer.buildContainer({
 					layerName: 'lightBeams'
 				});
-				this.rays.push(rContainer);
+				rayContainers.push(rayContainer);
 
 				for (let j = 0; j < h; j++) {
-					let ray = renderer.buildObject({
-						x: nx,
-						y: ny,
-						cell: 0,
-						sheetName: 'white',
-						parent: rContainer
+					const ray = globals.objects.buildObject({
+						x: ~~((nx * scale) - (scaleMult * j)),
+						y: (ny * scale) + (scaleMult * j * hm),
+						width: w * scaleMult,
+						height: scaleMult * hm,
+						visible: isVisible,
+						components: [{
+							type: 'sprite',
+							sheetName: 'white',
+							cell: 0,
+							parent: rayContainer,
+							alpha: ((1.0 - (j / h)) * 0.4),
+							tint: 0xffeb38,
+							blendMode: PIXI.BLEND_MODES.ADD
+						}]
 					});
-					ray.x = ~~((nx * scale) - (scaleMult * j));
-					ray.y = (ny * scale) + (scaleMult * j * hm);
-					ray.alpha = ((1.0 - (j / h)) * 0.4);
-					ray.width = w * scaleMult;
-					ray.height = scaleMult * hm;
-					ray.tint = 0xffeb38;
-					ray.blendMode = PIXI.BLEND_MODES.ADD;
+
+					rays.push(ray);
 				}
 			}
-
-			this.setVisible(this.obj.isVisible);
 		},
 
 		update: function () {
-			let rays = this.rays;
-			let rLen = rays.length;
-			for (let i = 0; i < rLen; i++) {
-				let r = rays[i];
+			const { rays } = this;
 
+			rays.forEach(r => {
 				r.alpha += (Math.random() * 0.03) - 0.015;
+
 				if (r.alpha < 0.3)
 					r.alpha = 0.3;
 				else if (r.alpha > 1)
 					r.alpha = 1;
-			}
-		},
-
-		setVisible: function (visible) {
-			this.patches.forEach(function (p) {
-				p.visible = visible;
-			});
-
-			this.rays.forEach(function (r) {
-				r.visible = visible;
 			});
 		},
 
-		destroy: function () {
-			this.patches.forEach(function (p) {
-				p.parent.removeChild(p);
-			});
-			this.patches = [];
+		setVisible: function (isVisible) {
+			const { rays, patches } = this;
 
-			this.rays.forEach(function (r) {
-				r.parent.removeChild(r);
+			rays.forEach(r => {
+				r.visible = isVisible;
 			});
-			this.rays = [];
+
+			patches.forEach(p => {
+				p.visible = isVisible;
+			});
 		}
 	};
 });

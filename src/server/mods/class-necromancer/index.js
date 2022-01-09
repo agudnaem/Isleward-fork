@@ -12,7 +12,6 @@ module.exports = {
 		this.events.on('onBeforeGetSpellsInfo', this.beforeGetSpellsInfo.bind(this));
 		this.events.on('onBeforeGetSpellsConfig', this.beforeGetSpellsConfig.bind(this));
 		this.events.on('onBeforeGetSpellTemplate', this.beforeGetSpellTemplate.bind(this));
-		this.events.on('onBeforeGetClientConfig', this.onBeforeGetClientConfig.bind(this));
 		this.events.on('onBeforeGetAnimations', this.beforeGetAnimations.bind(this));
 		this.events.on('onAfterGetZone', this.onAfterGetZone.bind(this));
 	},
@@ -73,10 +72,6 @@ module.exports = {
 				type: 'attackAnimation'
 			}
 		};
-	},
-
-	onBeforeGetClientConfig: function ({ resourceList }) {
-		resourceList.push(`${this.folderName}/images/abilityIcons.png`);
 	},
 
 	beforeGetSpellTemplate: function (spell) {

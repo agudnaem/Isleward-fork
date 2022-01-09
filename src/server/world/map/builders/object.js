@@ -6,8 +6,6 @@ const resourceSpawner = require('../../resourceSpawner');
 const mapObjects = require('../mapObjects');
 const getObjectifiedProperties = require('../getObjectifiedProperties');
 
-const spriteBuilder = require('../../spriteBuilder/index');
-
 //Helpers
 const buildRoom = (mapModule, blueprint) => {
 	if (blueprint.properties.exit) {
@@ -32,12 +30,12 @@ const buildRoom = (mapModule, blueprint) => {
 
 const buildHiddenRoom = (mapModule, blueprint) => {
 	const { mapFile } = mapModule;
-	const { cell } = blueprint;
+	const { properties } = blueprint;
 
-	blueprint.fog = (cell.properties || {}).fog;
-	blueprint.interior = (cell.properties || {}).interior;
-	blueprint.discoverable = (cell.properties || {}).discoverable;
-	blueprint.layer = ~~((cell.properties || {}).layer || 0);
+	blueprint.fog = (properties || {}).fog;
+	blueprint.interior = (properties || {}).interior;
+	blueprint.discoverable = (properties || {}).discoverable;
+	blueprint.layer = ~~((properties || {}).layer || 0);
 
 	if (!mapFile.properties.isRandom)
 		mapModule.hiddenRooms.push(blueprint);

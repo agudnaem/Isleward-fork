@@ -1,5 +1,3 @@
-const imageSize = require('image-size');
-
 const events = require('../misc/events');
 const fileLister = require('../misc/fileLister');
 const tos = require('./tos');
@@ -7,24 +5,9 @@ const tos = require('./tos');
 const config = {
 	logoPath: null,
 	loginBgGeneratorPath: null,
-	resourceList: [],
 	textureList: [
-
+		'tilesLoginBg'
 	],
-	//Textures that are 24x24. The renderer needs to know this
-	bigTextures: [
-
-	],
-	atlasTextureDimensions: {},
-	atlasTextures: [
-
-	],
-	spriteSizes: {
-		'images/tiles.png': 8,
-		'images/walls.png': 8,
-		'images/objects.png': 8,
-		'images/mobs.png': 8
-	},
 	blockingTileIndices: {
 		tiles: [6, 7, 54, 55, 62, 63, 154, 189, 190, 192, 193, 194, 195, 196, 197]
 	},
@@ -213,50 +196,6 @@ module.exports = {
 		events.emit('onBeforeGetContextMenuActions', config.contextMenuActions);
 		events.emit('onBeforeGetTermsOfService', config.tos);
 		events.emit('onBeforeGetTextureList', config.textureList);
-
-		await this.calculateAtlasTextureDimensions();
-	},
-
-	//The client needs to know this as well as the map loader
-	calculateAtlasTextureDimensions: async function () {
-		const { atlasTextures, atlasTextureDimensions } = config;
-
-		for (const tex of atlasTextures) {
-			if (atlasTextureDimensions[tex])
-				return;
-
-			const path = tex.includes('.png') ? `../${tex}` : `../client/images/${tex}.png`;
-			const dimensions = await imageSize(path);
-
-			delete dimensions.type;
-
-			atlasTextureDimensions[tex] = dimensions;
-		}
-	},
-
-	getTileIndexInAtlas: async function (spriteSheet, tileIndexInSource) {
-		const { atlasTextures, atlasTextureDimensions } = config;
-
-		//We need to perform this check because once mods start adding sheets to atlasTextures,
-		// things get out of control. We need to fix this in the future as it will become screwy.
-		if (Object.keys(atlasTextureDimensions).length !== atlasTextures)
-			await this.calculateAtlasTextureDimensions();
-
-		const indexOfSheet = atlasTextures.indexOf(spriteSheet);
-
-		let tileCountBeforeSheet = 0;
-
-		for (let i = 0; i < indexOfSheet; i++) {
-			const sheet = atlasTextures[i];
-			const { width, height } = atlasTextureDimensions[sheet];
-
-			tileCountBeforeSheet += ((width / 8) * (height / 8));
-		}
-
-		//Tile index 0 is 'no tile' in map files so we need to increment by 1
-		const result = tileCountBeforeSheet + tileIndexInSource + 1;
-
-		return result;
 	},
 
 	//Used to send to clients

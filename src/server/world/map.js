@@ -319,20 +319,6 @@ module.exports = {
 		}
 	},
 
-	getOffsetCellPos: function (sheetName, cell) {
-		const { config: { atlasTextureDimensions, atlasTextures } } = clientConfig;
-		const indexInAtlas = atlasTextures.indexOf(sheetName);
-
-		let offset = 0;
-		for (let i = 0; i < indexInAtlas; i++) {
-			const dimensions = atlasTextureDimensions[atlasTextures[i]];
-
-			offset += (dimensions.width / 8) * (dimensions.height / 8);
-		}
-
-		return cell + offset;
-	},
-
 	getCellInfo: function (gid, x, y, layerName) {
 		const cellInfoMsg = {
 			mapName: this.name,

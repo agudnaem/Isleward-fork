@@ -3,18 +3,22 @@ define([
 	'js/system/events',
 	'js/rendering/renderer',
 	'js/sound/sound',
-	'js/config'
+	'js/config',
+	'js/system/globals'
 ], function (
 	objBase,
 	events,
 	renderer,
 	sound,
-	config
+	config,
+	globals
 ) {
 	return {
 		objects: [],
 
 		init: function () {
+			globals.objects = this;
+
 			events.on('onChangeHoverTile', this.getLocation.bind(this));
 
 			[

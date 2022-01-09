@@ -18,8 +18,6 @@ const buildTile = (mapModule, tileInfo) => {
 
 	const offsetCell = spriteBuilder.track(cellInfo);
 
-	//const offsetCell = mapModule.getOffsetCellPos(tileInfo.sheetName, cellInfo.cell);
-
 	const isHiddenLayer = layerName.indexOf('hidden') === 0;
 
 	if (isHiddenLayer)

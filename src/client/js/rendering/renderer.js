@@ -85,7 +85,6 @@ define([
 			PIXI.settings.SPRITE_MAX_TEXTURES = Math.min(PIXI.settings.SPRITE_MAX_TEXTURES, 16);
 			PIXI.settings.RESOLUTION = 1;
 
-			events.on('onGetMap', this.onGetMap.bind(this));
 			events.on('onToggleFullscreen', this.toggleScreen.bind(this));
 			events.on('onMoveSpeedChange', this.adaptCameraMoveSpeed.bind(this));
 			events.on('resetRenderer', resetRenderer.bind(this));
@@ -154,7 +153,7 @@ define([
 		buildTitleScreen: function () {
 			this.titleScreen = true;
 
-			//renderLoginBackground(this);
+			renderLoginBackground(this);
 		},
 
 		onResize: function () {
@@ -391,7 +390,7 @@ define([
 				) {
 					//If the hider is an interior, the tile should be hidden if the player is inside the hider
 					if (interior) {
-						if (physics.isInPolygon(px, py, area))
+						if (physics.isInPolygon(px, py, area)) 
 							foundHiddenLayer = layer;
 					}
 
@@ -716,6 +715,24 @@ define([
 			obj.sprite.position.y = obj.y;
 			obj.sprite.width = obj.w;
 			obj.sprite.height = obj.h;
+		},
+
+		buildSpriteAsync: async function (config) {
+			const { sheetName, cell, container, layerName, visible } = config;
+
+			const sprite = new PIXI.Sprite();
+			sprite.visible = visible;
+
+			const textureExists = this.textures.hasOwnProperty(sheetName);
+			if (!textureExists)
+				await this.loadTexture(sheetName);
+
+			sprite.texture = this.getTexture(sheetName, cell);
+
+			const spriteContainer = container || this.layers[layerName || sheetName];
+			spriteContainer.addChild(sprite);
+
+			return sprite;
 		},
 
 		buildObject: function (obj) {

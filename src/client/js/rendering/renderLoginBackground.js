@@ -3,9 +3,9 @@ define([
 ], function (
 	globals
 ) {
-	let mRandom = Math.random.bind(Math);
+	const mRandom = Math.random.bind(Math);
 
-	let customRenderer = null;
+	const customRenderer = null;
 
 	const renderCustomLoginBg = async (renderer, path) => {
 		if (!customRenderer) {
@@ -20,14 +20,7 @@ define([
 		customRenderer(renderer);
 	};
 
-	const renderLoginBackground = renderer => {
-		const { loginBgGeneratorPath } = globals.clientConfig;
-		if (loginBgGeneratorPath) {
-			renderCustomLoginBg(renderer, loginBgGeneratorPath);
-
-			return;
-		}
-
+	const renderDefaultLoginBg = renderer => {
 		const { width, height, layers } = renderer;
 
 		renderer.setPosition({
@@ -35,8 +28,8 @@ define([
 			y: 0
 		}, true);
 
-		let w = Math.ceil(width / scale) + 1;
-		let h = Math.ceil(height / scale) + 1;
+		const w = Math.ceil(width / scale) + 1;
+		const h = Math.ceil(height / scale) + 1;
 
 		const midX = ~~(w / 2);
 		const midY = ~~(h / 2);
@@ -44,38 +37,54 @@ define([
 		const rGrass = 10;
 		const rBeach = 2;
 		const rShallow = 3;
+		const rDeeper = 4;
 
 		const noiseFactor = 3;
 
-		let container = layers.tileSprites;
+		const container = layers.tileSprites;
 
 		for (let i = 0; i < w; i++) {
 			for (let j = 0; j < h; j++) {
-				let tile = 5;
+				//Outside part is deep water
+				let tile;
 
-				let distance = Math.sqrt(Math.pow(i - midX, 2) + Math.pow(j - midY, 2));
+				const distance = Math.sqrt(Math.pow(i - midX, 2) + Math.pow(j - midY, 2));
+				//Grass
 				if (distance < rGrass + (Math.random() * noiseFactor))
-					tile = 3;
+					tile = 14;
+				//Beach
 				else if (distance < rGrass + rBeach + (Math.random() * noiseFactor))
-					tile = 4;
+					tile = 8;
+				//Shallow water
 				else if (distance < rGrass + rBeach + rShallow + (Math.random() * noiseFactor))
-					tile = 53;
+					tile = 6;
+				//Deeper water
+				else if (distance < rGrass + rBeach + rShallow + rDeeper + (Math.random() * noiseFactor))
+					tile = 2;
+				//Deepest water
+				else
+					tile = 0;
 
 				let alpha = mRandom();
 
-				if ([5, 53].indexOf(tile) > -1)
-					alpha *= 2;
-
 				if (Math.random() < 0.3) {
-					tile = {
-						5: 6,
-						3: 0,
-						4: 1,
-						53: 54
+					const options = {
+						//Grass
+						14: [15],
+						//Beach
+						8: [9],
+						//Shallow water
+						6: [7, 7, 7, 5],
+						//Deeper water
+						2: [3, 3, 3, 4, 5],
+						//Deepest water
+						0: [1, 1, 1, 2]
 					}[tile];
+
+					tile = options[~~(Math.random() * options.length)];
 				}
 				
-				let sprite = new PIXI.Sprite(renderer.getTexture('sprites', tile));
+				const sprite = new PIXI.Sprite(renderer.getTexture('tilesLoginBg', tile));
 
 				alpha = Math.min(Math.max(0.15, alpha), 0.65);
 
@@ -95,5 +104,16 @@ define([
 		}
 	};
 
-	return renderLoginBackground;
+	const renderLoginBg = renderer => {
+		const { loginBgGeneratorPath } = globals.clientConfig;
+		if (loginBgGeneratorPath) {
+			renderCustomLoginBg(renderer, loginBgGeneratorPath);
+
+			return;
+		}
+
+		renderDefaultLoginBg(renderer);
+	};
+
+	return renderLoginBg;
 });
