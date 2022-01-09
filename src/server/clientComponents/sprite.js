@@ -6,7 +6,12 @@ define([
 	return {
 		type: 'sprite',
 
-		sprite: null,
+		alpha: 1,
+		tint: undefined,
+		layerName: undefined,
+		sheetName: undefined,
+
+		sprite: undefined,
 
 		init: function (blueprint) {
 			this.buildSprite();
@@ -30,17 +35,15 @@ define([
 			if (!sprite) 
 				return;
 
-			[
-				'x',
-				'y',
-				'visible',
-				'width',
-				'height'
-			].forEach(p => {
-				const value = obj[p];
-
-				if (sprite[p] !== value)
-					sprite[p] = value;
+			Object.entries({
+				x: (obj.x * scale) + (obj.offsetX || 0),
+				y: (obj.y * scale) + (obj.offsetY || 0),
+				visible: obj.isVisible,
+				width: obj.width,
+				height: obj.height
+			}).forEach(([k, v]) => {
+				if (sprite[k] !== v && v !== undefined)
+					sprite[k] = v;
 			});
 
 			[
@@ -49,7 +52,7 @@ define([
 			].forEach(p => {
 				const value = this[p];
 
-				if (sprite[p] !== value)
+				if (sprite[p] !== value && value !== undefined)
 					sprite[p] = value;
 			});
 		},

@@ -1,4 +1,5 @@
 define([
+	'js/objects/objBaseLegacy',
 	'js/objects/objBase',
 	'js/system/events',
 	'js/rendering/renderer',
@@ -6,6 +7,7 @@ define([
 	'js/config',
 	'js/system/globals'
 ], function (
+	objBaseLegacy,
 	objBase,
 	events,
 	renderer,
@@ -118,54 +120,12 @@ define([
 		},
 
 		buildObject: function (template) {
-			let obj = $.extend(true, {}, objBase);
+			const base = template.components?.some(c => c.type === 'sprite') ? objBase : objBaseLegacy;
+			const obj = $.extend(true, {}, base);
 
-			let components = template.components || [];
-			delete template.components;
+			obj.init(template);
 
-			let syncTypes = ['portrait', 'area'];
-
-			for (let p in template) {
-				let value = template[p];
-				let type = typeof (value);
-
-				if (type === 'object') {
-					if (syncTypes.indexOf(p) > -1)
-						obj[p] = value;
-				} else
-					obj[p] = value;
-			}
-
-			if (obj.sheetName)
-				obj.sprite = renderer.buildObject(obj);
-
-			if (obj.name && obj.sprite) {
-				obj.nameSprite = renderer.buildText({
-					layerName: 'effects',
-					text: obj.name,
-					x: (obj.x * scale) + (scale / 2),
-					y: (obj.y * scale) + scale
-				});
-			}
-
-			//We need to set visibility before components kick in as they sometimes need access to isVisible
-			obj.updateVisibility();
-
-			components.forEach(c => {
-				//Map ids to objects
-				let keys = Object.keys(c).filter(k => {
-					return (k.indexOf('id') === 0 && k.length > 2);
-				});
-				keys.forEach(k => {
-					let value = c[k];
-					let newKey = k.substr(2, k.length).toLowerCase();
-
-					c[newKey] = this.objects.find(o => o.id === value);
-					delete c[k];
-				});
-
-				obj.addComponent(c.type, c);
-			});
+			this.objects.push(obj);
 
 			if (obj.self) {
 				events.emit('onGetPlayer', obj);
@@ -178,8 +138,6 @@ define([
 					y: (obj.y - (renderer.height / (scale * 2))) * scale
 				}, true);
 			}
-
-			this.objects.push(obj);
 
 			return obj;
 		},

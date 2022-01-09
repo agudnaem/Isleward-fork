@@ -226,24 +226,19 @@ module.exports = {
 				deltaY = 1;
 		}
 
-		let components = [{
+		this.obj.syncer.setComponent(false, 'bumpAnimation', {
 			type: 'bumpAnimation',
-			deltaX: deltaX,
-			deltaY: deltaY
-		}];
+			deltaX,
+			deltaY
+		});
 
 		//During casting we only bump
-		if ((target) && (this.animation)) {
-			components.push({
+		if (target && this.animation) {
+			this.obj.syncer.setComponent(false, 'animation', {
 				type: 'animation',
 				template: this.animation
 			});
 		}
-
-		this.obj.instance.syncer.queue('onGetObject', {
-			id: this.obj.id,
-			components: components
-		}, -1);
 	},
 
 	simplify: function (self) {

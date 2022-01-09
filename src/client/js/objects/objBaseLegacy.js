@@ -15,19 +15,33 @@ define([
 		offsetY: 0,
 		eventCallbacks: {},
 
-		width: scale,
-		height: scale,
-
-		isVisible: true,
-
 		init: function (template) {
 			const tplCpns = template.components || [];
 			delete template.components;
+			
+			let syncTypes = ['portrait', 'area'];
 
 			for (let p in template) {
-				const value = template[p];
+				let value = template[p];
+				let type = typeof (value);
 
-				this[p] = value;
+				if (type === 'object') {
+					if (syncTypes.indexOf(p) > -1)
+						this[p] = value;
+				} else
+					this[p] = value;
+			}
+
+			if (this.sheetName)
+				this.sprite = renderer.buildObject(this);
+
+			if (this.name && this.sprite) {
+				this.nameSprite = renderer.buildText({
+					layerName: 'effects',
+					text: this.name,
+					x: (this.x * scale) + (scale / 2),
+					y: (this.y * scale) + scale
+				});
 			}
 
 			//We need to set visibility before components kick in as they sometimes need access to isVisible
@@ -117,7 +131,30 @@ define([
 		},
 
 		setSpritePosition: function () {
+			const { sprite, chatter, stats, x, y } = this;
 
+			if (!sprite)
+				return;
+
+			renderer.setSpritePosition(this);
+
+			['nameSprite', 'chatSprite'].forEach((s, i) => {
+				const subSprite = this[s];
+				if (!subSprite)
+					return;
+
+				let yAdd = scale;
+				if (i === 1) {
+					yAdd *= -0.8;
+					yAdd -= (chatter.msg.split('\r\n').length - 1) * scale * 0.8;
+				}
+
+				subSprite.x = (x * scale) + (scale / 2) - (subSprite.width / 2);
+				subSprite.y = (y * scale) + yAdd;
+			});
+
+			if (stats)
+				stats.updateHpSprite();
 		},
 
 		updateVisibility: function () {

@@ -75,11 +75,11 @@ const buildRegularObject = (mapModule, blueprint) => {
 const buildClientObject = (mapModule, blueprint) => {
 	const { mapScale } = mapModule;
 
-	const { cell } = blueprint;
+	const { width, height, polyline } = blueprint;
 
-	if ((cell.width) && (!cell.polyline)) {
-		blueprint.width = cell.width / mapScale;
-		blueprint.height = cell.height / mapScale;
+	if (width && !polyline) {
+		blueprint.width = width / mapScale;
+		blueprint.height = height / mapScale;
 	}
 
 	const obj = objects.buildObjects([blueprint], true).getSimple(true);
@@ -87,19 +87,15 @@ const buildClientObject = (mapModule, blueprint) => {
 };
 
 //Builder
-const buildObject = (mapModule, layerName, cell) => {
+const buildObject = (mapModule, layerName, mapObj) => {
 	const { mapScale } = mapModule;
 
-	cell.properties = getObjectifiedProperties(cell.properties);
-	cell.polyline = cell.polyline || cell.polygon;
-
-	const x = cell.x / mapScale;
-	const y = (cell.y / mapScale) - 1;
+	const { gid, x, y, width, height, sheetName, cell, polyline, polygon, properties } = mapObj;
 
 	const clientObj = (layerName === 'clientObjects');
-	const cellInfo = mapModule.getCellInfo(cell.gid, x, y, layerName);
+	const cellInfo = mapModule.getCellInfo(gid, x, y, layerName);
 
-	let name = (cell.name || '');
+	let name = (mapObj.name || '');
 	let objZoneName = name;
 	if (name.indexOf('|') > -1) {
 		const split = name.split('|');
@@ -108,16 +104,28 @@ const buildObject = (mapModule, layerName, cell) => {
 	}
 
 	const blueprint = {
-		id: cell.properties.id,
 		clientObj: clientObj,
-		sheetName: cell.isDefined('sheetName') ? cell.sheetName : cellInfo.sheetName,
-		cell: cell.isDefined('cell') ? cell.cell : cellInfo.cell - 1,
-		x,
-		y,
+		sheetName: sheetName !== undefined ? sheetName : cellInfo.sheetName,
+		cell: cell !== undefined ? cell : cellInfo.cell - 1,
+		x: x / mapScale,
+		y: (y / mapScale) - 1,
 		name: name,
-		properties: cell.properties || {},
-		layerName: layerName
+		layerName: layerName,
+		properties: getObjectifiedProperties(properties),
+		polyline: polyline ?? polygon
 	};
+
+	blueprint.id = blueprint.properties.id;
+
+	if (blueprint.sheetName && blueprint.cell !== undefined) {
+		blueprint.properties.cpnSprite = {
+			cell: blueprint.cell,
+			sheetName: blueprint.sheetName
+		};
+
+		delete blueprint.sheetName;
+		delete blueprint.cell;
+	}
 
 	if (objZoneName !== name)
 		blueprint.objZoneName = objZoneName;
@@ -134,13 +142,13 @@ const buildObject = (mapModule, layerName, cell) => {
 
 	if ((blueprint.properties.cpnNotice) || (blueprint.properties.cpnLightPatch) || (layerName === 'rooms') || (layerName === 'hiddenRooms')) {
 		blueprint.y++;
-		blueprint.width = cell.width / mapScale;
-		blueprint.height = cell.height / mapScale;
-	} else if (cell.width === 24)
+		blueprint.width = width / mapScale;
+		blueprint.height = height / mapScale;
+	} else if (width === 24)
 		blueprint.x++;
 
-	if (cell.polyline) 
-		mapObjects.polyline(mapModule.size, blueprint, cell, mapScale);
+	if (polyline)
+		mapObjects.polyline(mapModule.size, blueprint, mapObj, mapScale);
 
 	if (layerName === 'rooms') 
 		buildRoom(mapModule, blueprint);
