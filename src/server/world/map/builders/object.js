@@ -123,6 +123,10 @@ const buildObject = (mapModule, layerName, mapObj) => {
 			sheetName: blueprint.sheetName
 		};
 
+		blueprint.properties.cpnTextSprite = {
+			text: blueprint.name
+		};
+
 		delete blueprint.sheetName;
 		delete blueprint.cell;
 	}
