@@ -109,7 +109,7 @@ module.exports = {
 		messageText = messageText.substr(1).split(' ');
 		let actionName = messageText.splice(0, 1)[0].toLowerCase();
 		actionName = Object.keys(commandRoles).find(a => (a.toLowerCase() === actionName));
-
+		
 		if (!actionName) {
 			this.obj.socket.emit('events', {
 				onGetMessages: [{

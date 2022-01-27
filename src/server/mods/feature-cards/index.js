@@ -19,8 +19,6 @@ module.exports = {
 		if (zoneName !== dealerZoneName)
 			return;
 
-		zoneConfig.sheetName = zoneConfig.sheetName.replace('$MODFOLDER$', this.folderName);
-
 		config.objects[dealerName] = zoneConfig;
 	},
 

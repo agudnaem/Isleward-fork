@@ -108,7 +108,7 @@ const buildObject = (mapModule, layerName, mapObj) => {
 		sheetName: sheetName !== undefined ? sheetName : cellInfo.sheetName,
 		cell: cell !== undefined ? cell : cellInfo.cell - 1,
 		x: x / mapScale,
-		y: (y / mapScale) - 1,
+		y: y / mapScale,
 		name: name,
 		layerName: layerName,
 		properties: getObjectifiedProperties(properties),
@@ -116,6 +116,16 @@ const buildObject = (mapModule, layerName, mapObj) => {
 	};
 
 	blueprint.id = blueprint.properties.id;
+
+	if (objZoneName !== name)
+		blueprint.objZoneName = objZoneName;
+
+	if (mapModule.zone) {
+		if ((mapModule.zone.objects) && (mapModule.zone.objects[objZoneName.toLowerCase()]))
+			extend(blueprint, mapModule.zone.objects[objZoneName.toLowerCase()]);
+		else if ((mapModule.zone.objects) && (mapModule.zone.mobs[objZoneName.toLowerCase()]))
+			extend(blueprint, mapModule.zone.mobs[objZoneName.toLowerCase()]);
+	}
 
 	if (blueprint.sheetName && blueprint.cell !== undefined) {
 		blueprint.properties.cpnSprite = {
@@ -129,29 +139,22 @@ const buildObject = (mapModule, layerName, mapObj) => {
 
 		delete blueprint.sheetName;
 		delete blueprint.cell;
-	}
 
-	if (objZoneName !== name)
-		blueprint.objZoneName = objZoneName;
-
-	if (mapModule.zone) {
-		if ((mapModule.zone.objects) && (mapModule.zone.objects[objZoneName.toLowerCase()]))
-			extend(blueprint, mapModule.zone.objects[objZoneName.toLowerCase()]);
-		else if ((mapModule.zone.objects) && (mapModule.zone.mobs[objZoneName.toLowerCase()]))
-			extend(blueprint, mapModule.zone.mobs[objZoneName.toLowerCase()]);
+		blueprint.properties.cpnTransform = {
+			width: mapObj.width,
+			height: mapObj.height
+		};
 	}
 
 	if (blueprint.blocking)
 		mapModule.collisionMap[blueprint.x][blueprint.y] = 1;
 
 	if ((blueprint.properties.cpnNotice) || (blueprint.properties.cpnLightPatch) || (layerName === 'rooms') || (layerName === 'hiddenRooms')) {
-		blueprint.y++;
 		blueprint.width = width / mapScale;
 		blueprint.height = height / mapScale;
-	} else if (width === 24)
-		blueprint.x++;
+	}
 
-	if (polyline)
+	if (blueprint.polyline)
 		mapObjects.polyline(mapModule.size, blueprint, mapObj, mapScale);
 
 	if (layerName === 'rooms') 

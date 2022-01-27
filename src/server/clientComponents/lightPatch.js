@@ -75,7 +75,7 @@ define([
 							type: 'sprite',
 							sheetName: 'white',
 							cell: 0,
-							parent: rayContainer,
+							container: rayContainer,
 							alpha: ((1.0 - (j / h)) * 0.4),
 							tint: 0xffeb38,
 							blendMode: PIXI.BLEND_MODES.ADD

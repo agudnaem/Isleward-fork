@@ -8,7 +8,7 @@ module.exports = {
 		zoneConfig: {
 			name: 'Shady Dealer',
 			cell: 0,
-			sheetName: '$MODFOLDER$/images/mobs.png',
+			sheetName: 'server/mods/feature-cards/images/mobs.png',
 			components: {
 				cpnWorkbench: {	type: 'gambling' }
 			}

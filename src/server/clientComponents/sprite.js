@@ -18,29 +18,39 @@ define([
 		},
 
 		buildSprite: async function () {
-			const { layerName, sheetName, cell, parent: container } = this;
+			const { layerName, sheetName, cell, container } = this;
 
 			this.sprite = await renderer.buildSpriteAsync({
 				sheetName,
 				cell,
 				container,
 				layerName,
-				visible: false
+				spriteConfig: {
+					visible: false
+				}
 			});
 		},
 
 		update: function () {
 			const { sprite, obj } = this;
 
-			if (!sprite) 
+			if (!sprite)
 				return;
 
+			let x = (obj.x * scale) + (obj.offsetX || 0);
+			let y = (obj.y * scale) + (obj.offsetY || 0);
+
+			const width = (obj?.transform?.width ?? obj.width) * scaleMult;
+			const height = (obj?.transform?.height ?? obj.height) * scaleMult;
+
+			y -= height;
+
 			Object.entries({
-				x: (obj.x * scale) + (obj.offsetX || 0),
-				y: (obj.y * scale) + (obj.offsetY || 0),
+				x,
+				y,
 				visible: obj.isVisible,
-				width: obj.width,
-				height: obj.height
+				width: width,
+				height: height
 			}).forEach(([k, v]) => {
 				if (sprite[k] !== v && v !== undefined)
 					sprite[k] = v;

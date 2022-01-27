@@ -5,7 +5,7 @@ module.exports = {
 		let highX = 0;
 		let highY = 0;
 
-		blueprint.area = cell.polyline.map(function (v) {
+		blueprint.area = blueprint.polyline.map(function (v) {
 			let x = ~~((v.x + cell.x) / mapScale);
 			let y = ~~((v.y + cell.y) / mapScale);
 

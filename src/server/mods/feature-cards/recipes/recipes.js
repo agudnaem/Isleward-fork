@@ -64,8 +64,8 @@ module.exports = [{
 	name: '5 Random Idols',
 	description: '',
 	materials: [{
-		name: 'Tradesman\'s Pride',
-		quantity: 10
+		name: 'Magic Essence',
+		quantity: 1
 	}],
 	craftAction: idol.bind(null, {
 		rolls: 5
