@@ -132,7 +132,7 @@ define([
 		if (item.spriteSize)
 			size = item.spriteSize;
 
-		if (spriteSizes[spritesheet])
+		if (spriteSizes?.[spritesheet])
 			size = spriteSizes[spritesheet];
 
 		const imgX = (-item.sprite[0] * size);
