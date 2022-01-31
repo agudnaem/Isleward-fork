@@ -43,8 +43,6 @@ define([
 			const width = (obj?.transform?.width ?? obj.width) * scaleMult;
 			const height = (obj?.transform?.height ?? obj.height) * scaleMult;
 
-			y -= height;
-
 			Object.entries({
 				x,
 				y,
@@ -68,7 +66,12 @@ define([
 		},
 
 		destroy: function () {
-			
+			const { sprite } = this;
+
+			if (!sprite)
+				return;
+
+			sprite.parent.removeChild(sprite);
 		}
 	};
 });

@@ -61,7 +61,7 @@ define([
 			let objects = this.objects;
 
 			let list = objects.filter(o => {
-				if ((!o.stats) || (o.nonSelectable) || (o === window.player) || (!o.sprite.visible))
+				if ((!o.stats) || (o.nonSelectable) || (o === window.player) || (!o.isVisible))
 					return false;
 
 				let dx = Math.abs(o.x - x);

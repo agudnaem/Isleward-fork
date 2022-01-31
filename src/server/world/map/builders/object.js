@@ -53,12 +53,14 @@ const buildHiddenRoom = (mapModule, blueprint) => {
 	}
 };
 
-const buildRegularObject = (mapModule, blueprint) => {
-	const { mapFile } = mapModule;
+const buildRegularObject = (mapModule, blueprint, mapObj) => {
+	const { mapScale, mapFile } = mapModule;
 
-	if (!mapFile.properties.isRandom)
+	if (!mapFile.properties.isRandom) {
+		blueprint.y -= (mapObj.height / mapScale);
+
 		spawners.register(blueprint, blueprint.spawnCd || mapFile.properties.spawnCd);
-	else {
+	} else {
 		const room = mapModule.rooms.find(r => {
 			return !(
 				blueprint.x < r.x ||
@@ -149,7 +151,7 @@ const buildObject = (mapModule, layerName, mapObj) => {
 	if (blueprint.blocking)
 		mapModule.collisionMap[blueprint.x][blueprint.y] = 1;
 
-	if ((blueprint.properties.cpnNotice) || (blueprint.properties.cpnLightPatch) || (layerName === 'rooms') || (layerName === 'hiddenRooms')) {
+	if (blueprint.properties.cpnNotice || blueprint.properties.cpnLightPatch || layerName === 'rooms' || layerName === 'hiddenRooms') {
 		blueprint.width = width / mapScale;
 		blueprint.height = height / mapScale;
 	}
@@ -158,13 +160,13 @@ const buildObject = (mapModule, layerName, mapObj) => {
 		mapObjects.polyline(mapModule.size, blueprint, mapObj, mapScale);
 
 	if (layerName === 'rooms') 
-		buildRoom(mapModule, blueprint);
+		buildRoom(mapModule, blueprint, mapObj);
 	else if (layerName === 'hiddenRooms') 
-		buildHiddenRoom(mapModule, blueprint);
+		buildHiddenRoom(mapModule, blueprint, mapObj);
 	else if (!clientObj) 
-		buildRegularObject(mapModule, blueprint);
+		buildRegularObject(mapModule, blueprint, mapObj);
 	else 
-		buildClientObject(mapModule, blueprint);
+		buildClientObject(mapModule, blueprint, mapObj);
 };
 
 module.exports = buildObject;

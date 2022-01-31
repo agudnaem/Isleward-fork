@@ -34,14 +34,13 @@ define([
 			let rx = (x * scale);
 			let ry = (y * scale);
 
-			if (position === 'under') {
+			if (position === 'under' || position === 'above')
 				rx += (width / 2) - (sprite.width / 2);
+			if (position === 'under')
 				ry += height;
-			}
 
 			if (offsetX)
 				rx += offsetX;
-
 			if (offsetY)
 				ry += offsetY;
 
@@ -76,7 +75,12 @@ define([
 		},
 
 		destroy: function () {
-			
+			const { sprite } = this;
+
+			if (!sprite)
+				return;
+
+			sprite.parent.removeChild(sprite);
 		}
 	};
 });
